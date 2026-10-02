@@ -1518,6 +1518,14 @@ int search_binary_handler(struct linux_binprm *bprm,struct pt_regs *regs)
 
 EXPORT_SYMBOL(search_binary_handler);
 
+#ifdef CONFIG_KSU_MANUAL_HOOK
+// ReSukiSU: sucompat. On < 3.14 do_execve_common() takes a 'const char *filename'
+// instead of a 'struct filename *', so the plain execve hook pair is used here.
+extern int ksu_handle_execve(int *fd, const char *filename, void *argv, void *envp, int *flags);
+extern int ksu_handle_post_execve(int *fd, const char *filename, void *argv, void *envp, int *flags,
+				  int *retval);
+#endif
+
 /*
  * sys_execve() executes a new program.
  */
@@ -1534,10 +1542,8 @@ static int do_execve_common(const char *filename,
 	const struct cred *cred = current_cred();
 	bool is_su;
 
-#ifdef CONFIG_KSU
-	// KernelSU: sucompat, do_execve_common on < 3.14 takes 'const char *filename'
-	extern int ksu_legacy_execve_sucompat(const char **, void *, void *);
-	ksu_legacy_execve_sucompat(&filename, (void *)&argv, (void *)&envp);
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	ksu_handle_execve((int *)AT_FDCWD, filename, &argv, &envp, 0);
 #endif
 
 	/*
@@ -1660,6 +1666,9 @@ out_files:
 	if (displaced)
 		reset_files_struct(displaced);
 out_ret:
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	ksu_handle_post_execve((int *)AT_FDCWD, filename, &argv, &envp, 0, &retval);
+#endif
 	return retval;
 }
 

@@ -3837,20 +3837,18 @@ CONFIG_NLATTR=y
 CONFIG_QMI_ENCDEC=y
 # CONFIG_QMI_ENCDEC_DEBUG is not set
 
-# KernelSU
+# ReSukiSU
 # NOTE: manual syscall hooks (fs/exec.c, fs/open.c, fs/stat.c, kernel/sys.c)
-#       are in place, so CONFIG_KSU_TAMPER_SYSCALL_TABLE must stay off.
+#       are in place, so the hooking method must stay KSU_MANUAL_HOOK.
+#       ReSukiSU dropped the old SukiSU knobs; the equivalent behaviour is now
+#       built-in / default:
+#         - LSM security hooks: always built for kernels < 6.8
+#         - sulog + adb root: always built (feature/ + adb_root.o)
+#         - no syscall table tamper, no kprobes ksud, no arm64 branch link,
+#           no hostsredirect: superseded by KSU_MANUAL_HOOK
 CONFIG_KSU=y
-CONFIG_KSU_LSM_SECURITY_HOOKS=y
-CONFIG_KSU_HEURISTIC_IN_TREE_BUILD=y
-CONFIG_KSU_FEATURE_SULOG=y
-CONFIG_KSU_FEATURE_ADBROOT=y
-CONFIG_KSU_ENABLE_FULL_UID_CHECKS=y
-# CONFIG_KSU_TAMPER_SYSCALL_TABLE is not set
-# CONFIG_KSU_KPROBES_KSUD is not set
-# CONFIG_KSU_HACK_ARM64_BRANCH_LINK is not set
-# CONFIG_KSU_HOSTSREDIRECT is not set
-# CONFIG_KSU_THRONE_TRACKER_ALWAYS_THREADED is not set
-# CONFIG_KSU_SHELL_HAS_SU_ALWAYS is not set
-# CONFIG_KSU_NOPRINTK is not set
+CONFIG_KSU_MANUAL_HOOK=y
+CONFIG_KSU_MANUAL_HOOK_AUTO_SETUID_HOOK=y
+CONFIG_KSU_MANUAL_HOOK_AUTO_INITRC_HOOK=y
+CONFIG_KSU_MANUAL_HOOK_AUTO_INPUT_HOOK=y
 # CONFIG_KSU_DEBUG is not set
