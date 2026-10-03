@@ -1,0 +1,72 @@
+name: Sync main-susfs
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+
+  workflow_dispatch:
+    inputs:
+      sync_upstream:
+        description: '合并上游 Kernel_Andriod11-14 的 main-susfs'
+        type: boolean
+        required: false
+        default: true
+      sync_main:
+        description: '合并本仓库的 main'
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-main-susfs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout main-susfs
+        uses: actions/checkout@v4
+        with:
+          ref: main-susfs
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge upstream main-susfs
+        if: ${{ inputs.sync_upstream || github.event_name == 'schedule' }}
+        run: |
+          git remote add upstream https://github.com/Cancro-SU-Lab/Kernel_Andriod11-14.git 2>/dev/null \
+            || git remote set-url upstream https://github.com/Cancro-SU-Lab/Kernel_Andriod11-14.git
+          git fetch upstream main-susfs
+          if ! git merge --no-edit upstream/main-susfs; then
+            git merge --abort
+            echo "::error::与上游 main-susfs 存在冲突，请在本地执行 git fetch upstream && git merge upstream/main-susfs 手动解决后再推送"
+            exit 1
+          fi
+
+      - name: Merge downstream main
+        if: ${{ inputs.sync_main || github.event_name == 'schedule' }}
+        run: |
+          git fetch origin main
+          if ! git merge --no-edit origin/main; then
+            git merge --abort
+            echo "::error::与本仓库 main 存在冲突，请在本地执行 git merge origin/main 手动解决后再推送"
+            exit 1
+          fi
+
+      - name: Push
+        run: |
+          git fetch origin main-susfs
+          if [ -z "$(git log --oneline origin/main-susfs..HEAD)" ]; then
+            echo "没有需要推送的新提交，跳过"
+            exit 0
+          fi
+          git push origin main-susfs
