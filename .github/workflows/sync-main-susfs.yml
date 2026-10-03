@@ -40,6 +40,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      # 定时任务只从默认分支读取本文件，工作分支完全依赖上面的 ref，
+      # 这里兜底校验，防止误把 susfs 合并进 main。
+      - name: Verify working branch
+        run: |
+          branch="$(git rev-parse --abbrev-ref HEAD)"
+          echo "当前工作分支: $branch"
+          if [ "$branch" != "main-susfs" ]; then
+            echo "::error::当前分支是 $branch，不是 main-susfs，终止运行"
+            exit 1
+          fi
+
       - name: Merge upstream main-susfs
         if: ${{ inputs.sync_upstream || github.event_name == 'schedule' }}
         run: |
@@ -69,4 +80,4 @@ jobs:
             echo "没有需要推送的新提交，跳过"
             exit 0
           fi
-          git push origin main-susfs
+          git push origin HEAD:refs/heads/main-susfs
