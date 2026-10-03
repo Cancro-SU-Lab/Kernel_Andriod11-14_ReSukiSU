@@ -36,7 +36,7 @@ spinlock_t susfs_spin_lock;
 spinlock_t susfs_mnt_id_recorder_spin_lock;
 
 bool is_log_enable = true;
-#ifdef CONFIG_KSU_SUSFS_ENABLE_LOG
+#ifdef CONFIG_SUSFS_ENABLE_LOG
 #define SUSFS_LOGI(fmt, ...) if (is_log_enable) pr_info("susfs:[%u][%u][%s] " fmt, current_uid(), current->pid, __func__, ##__VA_ARGS__)
 #define SUSFS_LOGE(fmt, ...) if (is_log_enable) pr_err("susfs:[%u][%u][%s]" fmt, current_uid(), current->pid, __func__, ##__VA_ARGS__)
 #else
@@ -1425,6 +1425,11 @@ void __init susfs_init(void) {
 	spin_lock_init(&susfs_mnt_id_recorder_spin_lock);
 	susfs_my_uname_init();
 }
+
+/* ReSukiSU only calls susfs_init() under its own CONFIG_KSU_SUSFS, which is
+ * 64BIT-only and can never be selected here. This susfs port is self-contained
+ * (prctl command channel), so hook the init call into the kernel boot. */
+fs_initcall(susfs_init);
 
 /* No module exit is needed becuase it should never be a loadable kernel module */
 //void __init susfs_exit(void)

@@ -57,7 +57,7 @@
 #include <asm/io.h>
 #include <asm/unistd.h>
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -794,6 +794,11 @@ SYSCALL_DEFINE1(setuid, uid_t, uid)
 	if (retval < 0)
 		goto error;
 
+#ifdef CONFIG_SUSFS_TRY_UMOUNT
+	if (new->uid != old->uid)
+		susfs_try_umount(new->uid);
+#endif
+
 	return commit_creds(new);
 
 error:
@@ -848,6 +853,11 @@ SYSCALL_DEFINE3(setresuid, uid_t, ruid, uid_t, euid, uid_t, suid)
 	retval = security_task_fix_setuid(new, old, LSM_SETID_RES);
 	if (retval < 0)
 		goto error;
+
+#ifdef CONFIG_SUSFS_TRY_UMOUNT
+	if (new->uid != old->uid)
+		susfs_try_umount(new->uid);
+#endif
 
 	return commit_creds(new);
 
@@ -1245,7 +1255,7 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 {
 	int errno = 0;
 
-#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
+#ifdef CONFIG_SUSFS_SPOOF_UNAME
 	{
 		struct new_utsname tmp;
 		down_read(&uts_sem);
@@ -2017,7 +2027,7 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 	unsigned char comm[sizeof(me->comm)];
 	long error;
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 	/*
 	 * susfs command channel.
 	 * The KernelSU flavour shipped with this tree speaks "supercall" and has
@@ -2032,21 +2042,21 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 			return -EFAULT;
 
 		switch (arg2) {
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 		case CMD_SUSFS_ADD_SUS_PATH:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_sus_path)))
 				return -EFAULT;
 			susfs_error = susfs_add_sus_path((struct st_susfs_sus_path __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#ifdef CONFIG_SUSFS_SUS_MOUNT
 		case CMD_SUSFS_ADD_SUS_MOUNT:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_sus_mount)))
 				return -EFAULT;
 			susfs_error = susfs_add_sus_mount((struct st_susfs_sus_mount __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
+#ifdef CONFIG_SUSFS_SUS_KSTAT
 		case CMD_SUSFS_ADD_SUS_KSTAT:
 		case CMD_SUSFS_ADD_SUS_KSTAT_STATICALLY:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_sus_kstat)))
@@ -2059,7 +2069,7 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 			susfs_error = susfs_update_sus_kstat((struct st_susfs_sus_kstat __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SUS_MAPS
+#ifdef CONFIG_SUSFS_SUS_MAPS
 		case CMD_SUSFS_ADD_SUS_MAPS:
 		case CMD_SUSFS_ADD_SUS_MAPS_STATICALLY:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_sus_maps)))
@@ -2072,35 +2082,35 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 			susfs_error = susfs_update_sus_maps((struct st_susfs_sus_maps __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SUS_PROC_FD_LINK
+#ifdef CONFIG_SUSFS_SUS_PROC_FD_LINK
 		case CMD_SUSFS_ADD_SUS_PROC_FD_LINK:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_sus_proc_fd_link)))
 				return -EFAULT;
 			susfs_error = susfs_add_sus_proc_fd_link((struct st_susfs_sus_proc_fd_link __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
+#ifdef CONFIG_SUSFS_SUS_MEMFD
 		case CMD_SUSFS_ADD_SUS_MEMFD:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_sus_memfd)))
 				return -EFAULT;
 			susfs_error = susfs_add_sus_memfd((struct st_susfs_sus_memfd __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_TRY_UMOUNT
+#ifdef CONFIG_SUSFS_TRY_UMOUNT
 		case CMD_SUSFS_ADD_TRY_UMOUNT:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_try_umount)))
 				return -EFAULT;
 			susfs_error = susfs_add_try_umount((struct st_susfs_try_umount __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SPOOF_UNAME
+#ifdef CONFIG_SUSFS_SPOOF_UNAME
 		case CMD_SUSFS_SET_UNAME:
 			if (!access_ok(VERIFY_READ, (void __user *)arg3, sizeof(struct st_susfs_uname)))
 				return -EFAULT;
 			susfs_error = susfs_set_uname((struct st_susfs_uname __user *)arg3);
 			break;
 #endif
-#ifdef CONFIG_KSU_SUSFS_ENABLE_LOG
+#ifdef CONFIG_SUSFS_ENABLE_LOG
 		case CMD_SUSFS_ENABLE_LOG:
 			if (arg3 != 0 && arg3 != 1)
 				return 0;

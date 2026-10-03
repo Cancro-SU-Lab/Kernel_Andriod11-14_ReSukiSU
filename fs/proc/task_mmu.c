@@ -17,7 +17,7 @@
 #include <asm/tlbflush.h>
 #include "internal.h"
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -269,7 +269,7 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 	unsigned long start, end;
 	dev_t dev = 0;
 	const char *name = NULL;
-#ifdef CONFIG_KSU_SUSFS_SUS_MAPS
+#ifdef CONFIG_SUSFS_SUS_MAPS
 	char *out_name = NULL;
 	int ret = 0;
 #endif
@@ -285,7 +285,7 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 	start = vma->vm_start;
 	end = vma->vm_end;
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MAPS
+#ifdef CONFIG_SUSFS_SUS_MAPS
 	out_name = kmalloc(SUSFS_MAX_LEN_PATHNAME, GFP_KERNEL);
 	if (!out_name)
 		goto orig_flow;
@@ -304,7 +304,7 @@ orig_flow:
 			pgoff,
 			MAJOR(dev), MINOR(dev), ino);
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MAPS
+#ifdef CONFIG_SUSFS_SUS_MAPS
 	if (ret == 2) {
 		seq_pad(m, ' ');
 		seq_puts(m, out_name);

@@ -15,7 +15,7 @@
 #include "pnode.h"
 #include "internal.h"
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -99,11 +99,11 @@ static int show_vfsmnt(struct seq_file *m, struct vfsmount *mnt)
 	int err = 0;
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	struct super_block *sb = mnt_path.dentry->d_sb;
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#ifdef CONFIG_SUSFS_SUS_MOUNT
 	struct proc_mounts *p = proc_mounts(m);
 #endif
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#ifdef CONFIG_SUSFS_SUS_MOUNT
 	if (susfs_sus_mount(mnt, &p->root))
 		return SEQ_SKIP;
 #endif
@@ -141,14 +141,14 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	struct path root = p->root;
 	int err = 0;
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT_MNT_ID_REORDER
+#ifdef CONFIG_SUSFS_SUS_MOUNT_MNT_ID_REORDER
 	int out_mnt_id = 0, out_parent_mnt_id = 0;
 	int status = 1;
 #endif
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#ifdef CONFIG_SUSFS_SUS_MOUNT
 	if (susfs_sus_mount(mnt, &p->root))
 		return 0;
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT_MNT_ID_REORDER
+#ifdef CONFIG_SUSFS_SUS_MOUNT_MNT_ID_REORDER
 	if (!uid_matches_proc_need_to_reorder_mnt_id())
 		goto orig_flow;
 	status = susfs_get_fake_mnt_id(r->mnt_id, &out_mnt_id, &out_parent_mnt_id);
@@ -158,11 +158,11 @@ static int show_mountinfo(struct seq_file *m, struct vfsmount *mnt)
 				MAJOR(sb->s_dev), MINOR(sb->s_dev));
 	goto bypass_orig_flow;
 orig_flow:
-#endif /* CONFIG_KSU_SUSFS_SUS_MOUNT_MNT_ID_REORDER */
-#endif /* CONFIG_KSU_SUSFS_SUS_MOUNT */
+#endif /* CONFIG_SUSFS_SUS_MOUNT_MNT_ID_REORDER */
+#endif /* CONFIG_SUSFS_SUS_MOUNT */
 	seq_printf(m, "%i %i %u:%u ", r->mnt_id, r->mnt_parent->mnt_id,
 		   MAJOR(sb->s_dev), MINOR(sb->s_dev));
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT_MNT_ID_REORDER
+#ifdef CONFIG_SUSFS_SUS_MOUNT_MNT_ID_REORDER
 bypass_orig_flow:
 #endif
 	if (sb->s_op->show_path)
@@ -223,7 +223,7 @@ static int show_vfsstat(struct seq_file *m, struct vfsmount *mnt)
 	struct path mnt_path = { .dentry = mnt->mnt_root, .mnt = mnt };
 	struct super_block *sb = mnt_path.dentry->d_sb;
 	int err = 0;
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#ifdef CONFIG_SUSFS_SUS_MOUNT
 	struct proc_mounts *p = proc_mounts(m);
 
 	if (susfs_sus_mount(mnt, &p->root))
@@ -316,7 +316,7 @@ static int mounts_open_common(struct inode *inode, struct file *file,
 	p->m.poll_event = ns->event;
 	p->show = show;
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT_MNT_ID_REORDER
+#ifdef CONFIG_SUSFS_SUS_MOUNT_MNT_ID_REORDER
 	if (uid_matches_proc_need_to_reorder_mnt_id()) {
 		susfs_add_mnt_id_recorder(p->ns);
 	}
@@ -338,7 +338,7 @@ static int mounts_release(struct inode *inode, struct file *file)
 {
 	struct proc_mounts *p = proc_mounts(file->private_data);
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT_MNT_ID_REORDER
+#ifdef CONFIG_SUSFS_SUS_MOUNT_MNT_ID_REORDER
 	if (uid_matches_proc_need_to_reorder_mnt_id()) {
 		susfs_remove_mnt_id_recorder();
 	}

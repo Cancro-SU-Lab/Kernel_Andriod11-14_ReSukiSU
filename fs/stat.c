@@ -18,7 +18,7 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -46,7 +46,7 @@ int vfs_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 	struct inode *inode = dentry->d_inode;
 	int retval;
 
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	/* linux-3.4 has no path based vfs_getattr, build the path locally */
 	{
 		struct path susfs_path = { .mnt = mnt, .dentry = dentry };
@@ -252,7 +252,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
 #endif
 	tmp.st_blocks = stat->blocks;
 	tmp.st_blksize = stat->blksize;
-#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
+#ifdef CONFIG_SUSFS_SUS_KSTAT
 	susfs_sus_kstat(tmp.st_ino, &tmp);
 #endif
 	return copy_to_user(statbuf,&tmp,sizeof(tmp)) ? -EFAULT : 0;
@@ -392,7 +392,7 @@ static long cp_new_stat64(struct kstat *stat, struct stat64 __user *statbuf)
 	tmp.st_size = stat->size;
 	tmp.st_blocks = stat->blocks;
 	tmp.st_blksize = stat->blksize;
-#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
+#ifdef CONFIG_SUSFS_SUS_KSTAT
 	susfs_sus_kstat64((unsigned long)tmp.st_ino, &tmp);
 #endif
 	return copy_to_user(statbuf,&tmp,sizeof(tmp)) ? -EFAULT : 0;

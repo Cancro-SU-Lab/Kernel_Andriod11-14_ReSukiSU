@@ -38,7 +38,7 @@
 #include "internal.h"
 #include "mount.h"
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -3123,7 +3123,7 @@ struct file *do_filp_open(int dfd, struct filename *pathname,
 {
 	struct nameidata nd;
 	struct file *filp;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	int error;
 
 	if (susfs_sus_path_by_filename(pathname, &error, SYSCALL_FAMILY_ALL_ENOENT)) {
@@ -3307,7 +3307,7 @@ SYSCALL_DEFINE4(mknodat, int, dfd, const char __user *, filename, umode_t, mode,
 	struct dentry *dentry;
 	struct path path;
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -3393,7 +3393,7 @@ SYSCALL_DEFINE3(mkdirat, int, dfd, const char __user *, pathname, umode_t, mode)
 	struct dentry *dentry;
 	struct path path;
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -3498,7 +3498,7 @@ static long do_rmdir(int dfd, const char __user *pathname)
 	struct filename *name;
 	struct dentry *dentry;
 	struct nameidata nd;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -3614,7 +3614,7 @@ static long do_unlinkat(int dfd, const char __user *pathname)
 	struct dentry *dentry;
 	struct nameidata nd;
 	struct inode *inode = NULL;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -3723,7 +3723,7 @@ SYSCALL_DEFINE3(symlinkat, const char __user *, oldname,
 	struct filename *from;
 	struct dentry *dentry;
 	struct path path;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -3832,7 +3832,7 @@ SYSCALL_DEFINE5(linkat, int, olddfd, const char __user *, oldname,
 	struct path old_path, new_path;
 	int how = 0;
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -4073,7 +4073,7 @@ SYSCALL_DEFINE4(renameat, int, olddfd, const char __user *, oldname,
 	struct filename *from;
 	struct filename *to;
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 

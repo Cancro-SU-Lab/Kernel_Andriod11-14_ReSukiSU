@@ -20,7 +20,7 @@
 
 #include <asm/uaccess.h>
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -267,7 +267,7 @@ static int filldir64(void * __buf, const char * name, int namlen, loff_t offset,
 		return -EINVAL;
 	if (hide_name(name, namlen) && buf->romnt)
 		return 0;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	if (susfs_sus_ino_for_filldir64(ino)) {
 		return 0;
 	}

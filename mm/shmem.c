@@ -31,7 +31,7 @@
 #include <linux/export.h>
 #include <linux/swap.h>
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -2428,7 +2428,7 @@ SYSCALL_DEFINE2(memfd_create,
 		goto err_name;
 	}
 
-#ifdef CONFIG_KSU_SUSFS_SUS_MEMFD
+#ifdef CONFIG_SUSFS_SUS_MEMFD
 	if (susfs_sus_memfd(&name[MFD_NAME_PREFIX_LEN])) {
 		error = -EFAULT;
 		goto err_name;

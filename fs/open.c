@@ -33,7 +33,7 @@
 
 #include "internal.h"
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_SUSFS
 #include <linux/susfs.h>
 #endif
 
@@ -76,7 +76,7 @@ static long do_sys_truncate(const char __user *pathname, loff_t length)
 	struct inode *inode;
 	struct vfsmount *mnt;
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
@@ -329,7 +329,7 @@ SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
 	struct inode *inode;
 	struct vfsmount *mnt;
 	int res;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 	int error;
@@ -341,7 +341,7 @@ SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
 	ksu_handle_faccessat(&dfd, &filename, &mode, NULL);
 #endif
 
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	fname = getname_safe(filename);
 	status = susfs_sus_path_by_filename(fname, &error, SYSCALL_FAMILY_ALL_ENOENT);
 	putname_safe(fname);
@@ -423,7 +423,7 @@ SYSCALL_DEFINE1(chdir, const char __user *, filename)
 {
 	struct path path;
 	int error;
-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+#ifdef CONFIG_SUSFS_SUS_PATH
 	struct filename* fname;
 	int status;
 
