@@ -462,8 +462,8 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 	char buffer[256];
 	int ret = 0;
 
-#if defined(CONFIG_KSU) && !defined(CONFIG_KSU_KPROBES_KSUD)
-	// KernelSU: supercall (reboot-based), hook on entry
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	// ReSukiSU: supercall (reboot-based), hook on entry
 	extern int ksu_handle_sys_reboot(int, int, unsigned int, void __user **);
 	ksu_handle_sys_reboot(magic1, magic2, cmd, &arg);
 #endif

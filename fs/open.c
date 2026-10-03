@@ -335,8 +335,8 @@ SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
 	int error;
 #endif
 
-#ifdef CONFIG_KSU
-	// KernelSU: sucompat
+#ifdef CONFIG_KSU_MANUAL_HOOK
+	// ReSukiSU: sucompat
 	extern int ksu_handle_faccessat(int *, const char __user **, int *, int *);
 	ksu_handle_faccessat(&dfd, &filename, &mode, NULL);
 #endif

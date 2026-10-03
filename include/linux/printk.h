@@ -3,6 +3,17 @@
 
 #include <linux/init.h>
 
+/*
+ * 3.4 does not pull <linux/dynamic_debug.h> in from printk.h, so pr_debug()
+ * expands to a bare dynamic_pr_debug() call for every translation unit that
+ * only includes printk.h. Modern kernels include the header from printk.h; do
+ * the same here (ReSukiSU relies on that, and it costs nothing when
+ * CONFIG_DYNAMIC_DEBUG is off).
+ */
+#if defined(CONFIG_DYNAMIC_DEBUG)
+#include <linux/dynamic_debug.h>
+#endif
+
 extern const char linux_banner[];
 extern const char linux_proc_banner[];
 

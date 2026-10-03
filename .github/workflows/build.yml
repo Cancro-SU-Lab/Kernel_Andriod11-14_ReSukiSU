@@ -60,7 +60,7 @@ jobs:
       - name: Build kernel
         run: |
           set -o pipefail
-          make HOSTCFLAGS="-fcommon" LOCALVERSION="-PowerBy_Cancro-SU-Lab_${{ github.run_number }}" -j$(nproc) 2>&1 | tee build.log
+          make HOSTCFLAGS="-fcommon" LOCALVERSION="-PowerBy_Cancro-SU-Lab_ReSukiSU_${{ github.run_number }}" -j$(nproc) 2>&1 | tee build.log
           
       - name: Verify zImage
         run: |
@@ -81,14 +81,14 @@ jobs:
           cp arch/arm/boot/zImage out/
           echo "---" > out/version.txt
           echo "Kernel built at $(date)" >> out/version.txt
-          echo "KernelSU commit: $(git -C KernelSU rev-parse --short HEAD)" >> out/version.txt
+          echo "ReSukiSU commit: $(git -C KernelSU rev-parse --short HEAD)" >> out/version.txt
           echo "---" >> out/version.txt
           cat out/version.txt
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: cancro-kernel-${{ github.run_number }}
+          name: cancro-kernel-resukisu-${{ github.run_number }}
           path: out/
           retention-days: 30
 

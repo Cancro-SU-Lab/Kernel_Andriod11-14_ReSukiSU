@@ -4,7 +4,7 @@
 ### AnyKernel setup
 # global properties
 properties() { '
-kernel.string=KernelSU for Cancro PowerBy Cancro-SU-Lab
+kernel.string=ReSukiSU for Cancro PowerBy Cancro-SU-Lab
 do.devicecheck=1
 do.modules=1
 do.systemless=1
